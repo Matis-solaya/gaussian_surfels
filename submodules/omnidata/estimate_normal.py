@@ -81,14 +81,14 @@ def save_outputs(img_path, output_file_name):
     img = Image.open(img_path)
 
     WIDTH, HEIGHT = img.size
-    # print("Load image shape ", HEIGHT, WIDTH)
+    print("Load image shape ", HEIGHT, WIDTH)
     # exit()
 
-    INPUT_WIDTH = WIDTH // 32 * 32
-    INPUT_HEIGHT = HEIGHT // 32 * 32
+    INPUT_WIDTH = (WIDTH // 4) // 32 * 32
+    INPUT_HEIGHT = (HEIGHT // 4) // 32 * 32
     # INPUT_WIDTH = 1280 // 2
     # INPUT_HEIGHT = 960 //2
-    # print("Processing shape ", INPUT_HEIGHT, INPUT_WIDTH)
+    print("Processing shape ", INPUT_HEIGHT, INPUT_WIDTH)
 
     if args.task == 'depth':
         trans_totensor = transforms.Compose([transforms.Resize([INPUT_HEIGHT, INPUT_WIDTH], interpolation=PIL.Image.BILINEAR),
