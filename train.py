@@ -43,7 +43,7 @@ def training(dataset, opt, pipe, testing_iterations, saving_iterations, checkpoi
         (model_params, first_iter) = torch.load(checkpoint)
         gaussians.restore(model_params, opt)
     elif use_mask: # visual hull init
-        gaussians.mask_prune(scene.getTrainCameras(), 4)
+        #gaussians.mask_prune(scene.getTrainCameras(), 4)
         None
 
     opt.densification_interval = max(opt.densification_interval, len(scene.getTrainCameras()))

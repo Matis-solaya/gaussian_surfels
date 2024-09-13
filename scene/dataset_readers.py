@@ -77,10 +77,11 @@ def getNerfppNorm(cam_info):
 
 def readColmapCameras(cam_extrinsics, cam_intrinsics, images_folder):
     cam_infos = []
-    for idx, key in enumerate(cam_extrinsics):
+    list_cams = list(cam_extrinsics.keys())[::2]
+    for idx, key in enumerate(list_cams):
         sys.stdout.write('\r')
         # the exact output you're looking for:
-        sys.stdout.write("Reading camera {}/{}".format(idx+1, len(cam_extrinsics)))
+        sys.stdout.write("Reading camera {}/{}".format(idx+1, len(list_cams)))
         sys.stdout.flush()        
         
         extr = cam_extrinsics[key]
@@ -89,7 +90,7 @@ def readColmapCameras(cam_extrinsics, cam_intrinsics, images_folder):
         width = intr.width        
         
         image_path = os.path.join(images_folder, os.path.basename(extr.name))
-        image_name = os.path.basename(image_path).split(".")[0]
+        image_name = os.path.basename(image_path)[:-4]
         # print(image_path)
         image = Image.open(image_path)
 
@@ -138,7 +139,7 @@ def readColmapCameras(cam_extrinsics, cam_intrinsics, images_folder):
             mono = None
 
         try:
-            mask = load_mask(f'{images_folder}/../mask/{image_name[-3:]}.png')[None]
+            mask = load_mask(f'{images_folder}/../mask/{image_name}.png')[None]
         except FileNotFoundError:
             mask = np.ones([1, image.size[1], image.size[0]]).astype(np.float32)
 
@@ -343,15 +344,15 @@ def load_rgb(path):
     img = skimage.img_as_float32(img)
 
     # pixel values between [-1,1]
-    img -= 0.5
-    img *= 2.
-    img = img.transpose(2, 0, 1)
-    return img
+    return 2. * (img.transpose(2, 0, 1) - 0.5)
 
 def load_mask(path):
-    alpha = imageio.imread(path, pilmode='F')
-    alpha = skimage.img_as_float32(alpha) / 255
-    return alpha
+    # alpha = imageio.imread(path, pilmode="F")
+    # alpha = skimage.img_as_float32(alpha)
+    # return alpha
+    alpha = imageio.imread(path)[...,0]
+    alpha[alpha>0]=255
+    return skimage.img_as_float32(alpha)
 
 def read_monoData(path):
     mono = np.load(path)
